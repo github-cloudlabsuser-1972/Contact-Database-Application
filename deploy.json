@@ -1,58 +1,59 @@
 {
     "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
     "contentVersion": "1.0.0.0",
+    "parameters": {
+        "name": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the web app that you wish to create."
+            }
+        },
+        "hostingPlanName": {
+            "type": "string",
+            "metadata": {
+                "description": "The name of the App Service plan to use for hosting the web app."
+            }
+        },
+        "sku": {
+            "type": "string",
+            "defaultValue": "F1",
+            "metadata": {
+                "description": "The pricing tier of the App Service plan."
+            }
+        },
+        "workerSize": {
+            "type": "string",
+            "defaultValue": "0",
+            "metadata": {
+                "description": "The instance size of the App Service plan."
+            }
+        }
+    },
     "resources": [
         {
             "type": "Microsoft.Web/serverfarms",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('appServicePlanName')]",
+            "name": "[parameters('hostingPlanName')]",
             "location": "[resourceGroup().location]",
             "sku": {
-                "name": "[parameters('appServicePlanSku')]"
+                "name": "[parameters('sku')]",
+                "capacity": "[parameters('workerSize')]"
+            },
+            "properties": {
+                "name": "[parameters('hostingPlanName')]"
             }
         },
         {
             "type": "Microsoft.Web/sites",
             "apiVersion": "2020-06-01",
-            "name": "[parameters('webAppName')]",
+            "name": "[parameters('name')]",
             "location": "[resourceGroup().location]",
             "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+                "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
             ],
             "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('hostingPlanName'))]"
             }
-        },
-        {
-            "type": "Microsoft.Sql/servers",
-            "apiVersion": "2020-08-01-preview",
-            "name": "[parameters('sqlServerName')]",
-            "location": "[resourceGroup().location]",
-            "properties": {
-                "administratorLogin": "[parameters('sqlAdministratorLogin')]",
-                "administratorLoginPassword": "[parameters('sqlAdministratorLoginPassword')]"
-            },
-            "resources": [
-                {
-                    "type": "databases",
-                    "apiVersion": "2020-08-01-preview",
-                    "name": "[parameters('sqlDatabaseName')]",
-                    "location": "[resourceGroup().location]",
-                    "dependsOn": [
-                        "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
-                    ]
-                }
-            ]
         }
-    ],
-    "outputs": {
-        "webAppUrl": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Web/sites', parameters('webAppName'))).defaultHostName]"
-        },
-        "sqlServerFqdn": {
-            "type": "string",
-            "value": "[reference(resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))).fullyQualifiedDomainName]"
-        }
-    }
+    ]
 }
