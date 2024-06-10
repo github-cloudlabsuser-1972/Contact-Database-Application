@@ -1,0 +1,27 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "webAppName": {
+            "value": "ContactDatabaseWebApp-kurokawa"
+        },
+        "appServicePlanName": {
+            "value": "ContactDatabaseAppServicePlan"
+        },
+        "appServicePlanSku": {
+            "value": "F1"
+        },
+        "sqlServerName": {
+            "value": "ContactDatabaseSQLserver-murakami"
+        },
+        "sqlDatabaseName": {
+            "value": "ContactDatabaseSQLdatabase-murakami"
+        },
+        "sqlAdministratorLogin": {
+            "value": "adminuser"
+        },
+        "sqlAdministratorLoginPassword": {
+            "value": "murakami1234!"
+        }
+    }
+}
